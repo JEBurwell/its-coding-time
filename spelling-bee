@@ -1,0 +1,176 @@
+def is_valid_word(word, letters, required_letter, used_words):
+  word = word.upper() #Just making sure the word
+  required_letter = required_letter.upper() #and the required letter are uppercase
+
+  min_length = False #Tells whether word meets minimum length
+  req_letter = False #Tells whether word has required character
+  no_outside_letter = False #Tells whether word only has letters in letter_list
+  not_used = False #Tells whether word hasn't been used before
+
+  if word == "END": #First see if the user ended the game
+    return True #If they did, stop here and accept the command
+  # If the user didn't end the game, then see if it meets all the other checks
+
+  if len(word) >= 4: #If the word is 4 or more characters
+    min_length = True #Then the word meets the minimum length check
+  else: #If it's not 4 or more characters
+    print("Your word must be at least 4 letters long") #Tell the user
+  
+  if required_letter in word: #If the required letter is in the word
+    req_letter = True #Then the word meets the required letter check
+  else: #If the word doesn't have the required letter
+    print("Your word must contain the letter", required_letter) #Tell the user
+
+  for letter in range(len(word)): #For every index in the user's word
+    if not word[letter] in letters: #If the current letter isn't in the list of usable letters
+      print(word[letter], "is not a letter you can use. The only letters you can use are",letters) #Tell the user you can't use this letter
+      break #No need to continue the loop if a letter fails this check
+    elif letter == (len(word)-1): #If you've gone through all the letters in the word and they're all in the list of usable letters
+      no_outside_letter = True #Then the word meets the no outside letters check
+  
+  if not word in used_words: #If the word hasn't been used
+    not_used = True #Then the word meets the not used check
+  else: #If it has been used
+    print("Already used") #Tell the user
+  
+
+  checks_passed = min_length and req_letter and no_outside_letter and not_used #Determines if all conditions are met
+  if checks_passed: #If all 4 checks are True
+    return True #Then the user's word is a valid word
+  else: #If any of the checks fail
+    return False #Then the word isn't valid
+
+
+
+# Write the get_word function here.
+def get_word(letters, required_letter, used_words):    
+  
+  word = input("Enter your word: \n") #Asks the user for a word
+
+  while is_valid_word(word, letters, required_letter, used_words) == False: #If the word the user entered is invalid
+    
+      word = input("Enter your word: \n") #Ask the user for another word again
+
+  return word.upper() #Once 'word' is valid, it moves past the while loop and returns the word (in upper case)
+
+
+
+def is_pangram(guess, letters):
+  #It's like the reverse of the outside letter check.
+  #Instead of seeing if all the letters in the word are in the letter list
+  #We see if all the letters in the letter list are in the word
+
+  pangram = False
+
+  for letter in range(len(letters)): #For every list item
+    if not letters[letter] in guess: #If one of the letters in the letter list isn't in the user's guess
+      break #Then the word isn't a pangram, keep pangram as 'False' and stop the loop
+    elif letter == len(letters)-1: #If you've gone through every list item, and all the letters in the list are in the guess
+      pangram = True #Then the word is a pangram!
+
+  if pangram: #If the word is a pangram
+    return True #Then is_pangram is True
+  else: #If the word isn't a pangram
+    return False #Then the function returns False
+
+
+
+
+def get_point_value(word,letters):
+  
+  score = 0
+
+  for letter in word: #For every letter the word has
+    score += 1 #Add a point to the score
+  
+  if is_pangram(word,letters): #If the word is a pangram
+    score += 7 #Add 7 bonus points to the score
+    print(word, "- Pangram!") #and print the word with a text showing it's a pangram
+  else: #If the word isn't a pangram
+    print(word) #Just print the word
+
+  return score #Finally, return the final score count for the word
+
+
+
+
+def play_spelling_bee():
+
+  final_score = 0 #Sets the score to zero for a new game
+
+  used_words = [] #Defines the list for previously guessed words
+
+  valid_letter_list = False #Checks if the user actually entered a valid list of 7 letters separated by commas. Just tidying up some edge cases unnecessarily :)
+
+  while valid_letter_list == False: #If the user hasn't entered a valid list of letters
+    
+    valid_letter_list = True #If the user enters a list correctly, then it stops the loop.
+    #If a user makes an invalid letter list, this will turn false, keeping the loop going
+
+    all_letters = "" #Resets the different character check
+    letters = input("Welcome to Spelling Bee! Enter your 7 letters, separated by commas: \n") #Ask the user for letter CSVs
+    
+    if len(letters) == 13: #A valid letter list should have 7 letters and 6 commas, so the length should be 13.
+      for char in range(len(letters)): #For each character in the user's input
+
+        if letters[char].isalpha() and letters[char].upper() in all_letters.upper(): #Checks if the letter has been used already
+          print("Please enter 7 different letters")
+          valid_letter_list = False
+          break #If there's a duplicate letter, Repeat the while loop
+        else: #If it's not a duplicate letter 
+          all_letters += letters[char] #then add it to the letters cycled through so far
+
+        if char != 0 and char != len(letters)-1: #If the character isn't the first or last character
+        #this prevents error when reading [char-1] for index zero or [char+1] for the last index
+          if letters[char].isalpha(): #If it's a letter
+
+            if letters[char-1] == "," and letters[char+1] == ",": #If the character before and after the letter is a comma
+              continue #Carry on. Nothing wrong here.
+            else: #If this letter isn't comma separated
+              print("Please enter 7 comma separated letters")
+              valid_letter_list = False
+              break #Repeat the while loop
+          elif letters[char] == ",": #Or if it's a comma
+
+            if letters[char-1].isalpha() and letters[char+1].isalpha(): #If the character before and after the comma is a letter
+              continue #Carry on. Nothing wrong here.
+            else: #If this comma isn't separating letters
+              print("Please enter 7 comma separated letters")
+              valid_letter_list = False
+              break #Repeat the while loop
+          else: #If something's not a letter or comma
+            print("Please enter 7 comma separated letters")
+            valid_letter_list = False
+            break #Repeat the while loop
+        else: #For the first and last character
+        
+          if letters[char].isalpha(): #The first and last characters should be letters
+            continue #If it is, then carry on.
+          else: #If it's not
+            print("Please make sure the first and last characters are letters")
+            valid_letter_list = False
+            break #Repeat the while loop
+    else:#If more or less than 7 comma separated letter
+      valid_letter_list = False
+      print("Please enter 7 comma separated letters") #Repeat the loop after saying this
+
+  letters_list = letters.upper().split(",") #Breaks the users input into a list of each letter
+
+  required_letter = input(f"Which of these 7 letters {letters_list} will be your required letter?\n") #Asks user for a required letter
+
+  while not required_letter.upper() in letters_list: #If the user enters somethng that isn't in the letter list
+    print(required_letter,"is not an available letter. Please choose from the following:",letters_list) #Ask the user to enter a value from the list
+
+    required_letter = input(f"Which of these 7 letters {letters_list} will be your required letter? \n") #Prompts user to enter a required letter again
+
+  word = get_word(letters_list, required_letter, used_words) #Prompts user for a valid word 
+
+  while word != "END": #If the user hasn't ended the game
+    used_words.append(word) #Add the guess to the used word list
+    final_score += get_point_value(word,letters_list) #Add the score from the guess to the final score
+
+    word = get_word(letters_list,required_letter,used_words) #Asks user for the next guess
+  
+  print("Your final score is", final_score) #Prints final score
+
+play_spelling_bee() #Calls function to play the game!
