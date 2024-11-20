@@ -1,0 +1,53 @@
+#Variables___________________________________________________
+import random
+
+total = 0
+
+dice1 = ""
+dice2 = ""
+roll = ""
+again = "yes"
+End = "This is just a variable I can use to set another variable equal to if I want something to end and is not meant to be replicated."
+#Code_________________________________________________________
+
+play = input("Start a game? Enter 'yes' to play: \n")  
+
+while play != End:
+  if play == 'yes' or play == 'Yes' or play == 'YES':
+    while roll != 2 and roll != 12 and (again == "yes" or again == "Yes" or again == "YES"):   
+      dice1 = random.randint(1,6)
+      print("dice 1:" , dice1)
+
+      dice2 = random.randint(1,6)
+      print("dice 2:" , dice2)
+
+      roll = dice1 + dice2
+      print("You rolled a", roll ,end=".\n")
+      
+      if roll != 2 and roll != 12:
+        total += (roll*10)
+        print("Your current total is:",total,end="!\n")
+        again = input("Roll again? Enter 'yes' to continue and 'no' to quit:\n")
+      elif (roll == 2 or roll == 12) and (total == 0):
+        print("Ouch! Done before you started. Try again!")
+        play = End
+      else:
+        print("Oh no! You lost all your points. Game over. Try again!")
+        play = End
+
+  elif play == 'no' or play == 'NO' or play == 'No':
+    print("See ya later, then")
+    play = End
+    
+  elif (play != 'no' or play != 'No' or play != 'NO') and (play != 'yes' or play != 'Yes' or play != 'YES'):
+    print("I'm sorry, I don't understand that command\n")
+    play = input("Start a game? Enter 'yes' to play: \n")
+
+  if again == 'no' or again == 'NO' or again == 'No':
+    print("Okay, your final total is",total,end =".\n")
+    print("Think you can get higher? Try again!")
+    play = End
+
+  if not(again == 'no' or again == 'No' or again == 'NO' or again == 'yes' or again == 'Yes' or again == 'YES'):
+    print("I'm sorry, I don't understand that command\n")
+    again = input("Roll again? Enter 'yes' to continue and 'no' to quit: \n")
